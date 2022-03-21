@@ -1,9 +1,10 @@
 #pragma once
 #include "Window.h"
+#include "YamUtility.h"
 
 namespace Yam
 {
-	class GmWin
+	class YAM_API GmWin
 	{
 	public:
 		static void Init();
@@ -21,6 +22,6 @@ namespace Yam
 
 		GmWin();
 
-		Window* mWindow{nullptr};
+		Window* mWindow{ nullptr };
 	};
 }

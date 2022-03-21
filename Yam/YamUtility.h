@@ -2,10 +2,14 @@
 
 #include "PrecompH.h"
 
-#ifdef YAM_LIB
-	#define YAM_API __declspec(dllexport)
+#ifdef YAM_WINDOWS
+	#ifdef YAM_LIB
+		#define YAM_API __declspec(dllexport)
+	#else
+		#define YAM_API __declspec(dllimport)
+	#endif
 #else
-	#define YAM_API __declspec(dllimport)
+	#define YAM_API
 #endif
 
 #ifdef YAM_DEBUG
