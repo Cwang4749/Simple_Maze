@@ -8,6 +8,9 @@ namespace Yam
 	{
 		if (!glfwInit())
 			YAM_LOG("ERROR: GLFW Initialization Failed");
+
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+			YAM_LOG("ERROR: GLAD Initialization Failed");
 	}
 
 	bool GlfwWin::CreateWindow(int width, int height, const std::string& name)

@@ -2,7 +2,8 @@
 #include "PrecompH.h"
 #include "YamApp.h"
 #include "GmWin.h"
-#include "GLFW/glfw3.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"  //maybe can be removed
 
 namespace Yam
 {
