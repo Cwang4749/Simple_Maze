@@ -24,6 +24,7 @@ namespace Yam
 		}
 
 		glfwMakeContextCurrent(mGlfwWindow);
+		glfwSwapInterval(1);
 
 		return true;
 	}

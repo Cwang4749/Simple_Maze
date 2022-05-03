@@ -2,6 +2,9 @@
 
 #include "YamApp.h"
 #include "GmWin.h"
+#include "Sprite.h"
+#include "Shader.h"
+#include "Renderer.h"
 
 #define YAM_INITIATE(classname) \
 \
