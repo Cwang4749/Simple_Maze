@@ -9,6 +9,6 @@ uniform ivec2 windowSize;
 
 void main()
 {
-	gl_Position = vec4(2.0*(rawCoords.x+spriteCoord.x)/windowSize.x - 1, 2.0*(rawCoords.y+spriteCoord.y)/windowSize.y - 1, spriteCoord.z, 0.0f, 1.0f)
+	gl_Position = vec4(2.0*(rawCoords.x+spriteCoord.x)/windowSize.x - 1, 2.0*(rawCoords.y+spriteCoord.y)/windowSize.y - 1, spriteCoord.z, 1.0f);
 	TexturePoints = tCoordInput;
 }

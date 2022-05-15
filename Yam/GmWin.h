@@ -1,6 +1,7 @@
 #pragma once
 #include "Window.h"
 #include "YamUtility.h"
+#include "Events.h"
 
 namespace Yam
 {
@@ -16,6 +17,9 @@ namespace Yam
 
 		int GetWidth() const;
 		int GetHeight() const;
+
+		void SetKeyPressedCallBack(const std::function<void(const KeyPressed&)>& keyPressCallback);
+		void SetKeyReleasedCallBack(const std::function<void(const KeyReleased&)>& keyReleaseCallback);
 
 	private:
 		inline static GmWin* mInst{nullptr};

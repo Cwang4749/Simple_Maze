@@ -1,16 +1,17 @@
 #include "PrecompH.h"
 #include "GlfwWin.h"
 #include "YamUtility.h"
+#include "Events.h"
 
 namespace Yam
 {
-	GlfwWin::GlfwWin()
+	GlfwWin::GlfwWin() 
 	{
 		if (!glfwInit())
 			YAM_LOG("ERROR: GLFW Initialization Failed");
 
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-			YAM_LOG("ERROR: GLAD Initialization Failed");
+		/*if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+			YAM_LOG("ERROR: GLAD Initialization Failed");*/
 	}
 
 	bool GlfwWin::CreateWindow(int width, int height, const std::string& name)
@@ -25,6 +26,30 @@ namespace Yam
 
 		glfwMakeContextCurrent(mGlfwWindow);
 		glfwSwapInterval(1);
+
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+			YAM_LOG("ERROR: Glad failed to initialize");
+
+		glfwSetWindowUserPointer(mGlfwWindow, &mCallbacks);
+
+		glfwSetKeyCallback(mGlfwWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+			{
+				if (action == GLFW_PRESS || action == GLFW_REPEAT)
+				{
+					Callbacks* userPointer{ (Callbacks*)glfwGetWindowUserPointer(window) };
+
+					KeyPressed event{ key };
+					userPointer->keyPressCallback(event);
+				}
+				else if (action == GLFW_RELEASE)
+				{
+					Callbacks* userPointer{ (Callbacks*)glfwGetWindowUserPointer(window) };
+
+					KeyReleased event{ key };
+					userPointer->keyReleaseCallback(event);
+				}
+			}
+		);
 
 		return true;
 	}
@@ -59,5 +84,14 @@ namespace Yam
 			glfwDestroyWindow(mGlfwWindow);
 
 		glfwTerminate();
+	}
+
+	void GlfwWin::SetKeyPressedCallBack(std::function<void(const KeyPressed&)> keyPressCallback)
+	{
+		mCallbacks.keyPressCallback = keyPressCallback;
+	}
+	void GlfwWin::SetKeyReleasedCallBack(std::function<void(const KeyReleased&)> keyReleaseCallback)
+	{
+		mCallbacks.keyReleaseCallback = keyReleaseCallback;
 	}
 }

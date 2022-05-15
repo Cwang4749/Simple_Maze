@@ -1,5 +1,6 @@
 #pragma once
 #include "PrecompH.h"
+#include "Events.h"
 
 namespace Yam
 {
@@ -11,5 +12,7 @@ namespace Yam
 		virtual void GetEvents() = 0;
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
+		virtual void SetKeyPressedCallBack(std::function<void(const KeyPressed&)> keyPressCallback) = 0;
+		virtual void SetKeyReleasedCallBack(std::function<void(const KeyReleased&)> keyReleaseCallback) = 0;
 	};
 }

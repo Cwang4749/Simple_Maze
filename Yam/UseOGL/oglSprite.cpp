@@ -74,4 +74,8 @@ namespace Yam {
 		glBindVertexArray(mVAO);
 		glBindTexture(GL_TEXTURE_2D, mTexture);
 	}
+	bool oglSprite::IsBound() const
+	{
+		return false;
+	}
 }

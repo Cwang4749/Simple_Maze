@@ -1,8 +1,5 @@
-#include"Yam.h"
+#include "Yam.h"
+#include "FreeApp.h"
 
-class FreeApp : public Yam::YamApp
-{
-
-};
 
 YAM_INITIATE(FreeApp);

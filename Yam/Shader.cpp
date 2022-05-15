@@ -20,4 +20,8 @@ namespace Yam
 	{
 		mImplementation->Set2IntUni(uniName, uni1, uni2);
 	}
+	void Shader::Bind()
+	{
+		mImplementation->Bind();
+	}
 }

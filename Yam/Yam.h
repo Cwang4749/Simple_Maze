@@ -5,6 +5,8 @@
 #include "Sprite.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include "KeyCodes.h"
+#include "Events.h"
 
 #define YAM_INITIATE(classname) \
 \

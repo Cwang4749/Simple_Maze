@@ -14,6 +14,8 @@ set(HEADER_FILES
 	UseOGL/oglSprite.h
 	UseOGL/oglShader.h
 	UseOGL/oglRenderer.h
+	Events.h
+	KeyCodes.h
 	)
 
 set(SOURCE_FILES 
@@ -26,6 +28,7 @@ set(SOURCE_FILES
 	UseOGL/oglSprite.cpp
 	UseOGL/oglShader.cpp
 	UseOGL/oglRenderer.cpp
+	Events.cpp
 	)
 
 add_library(Yam SHARED ${HEADER_FILES} ${SOURCE_FILES})

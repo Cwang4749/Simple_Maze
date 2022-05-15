@@ -41,6 +41,16 @@ namespace Yam
 		return mWindow->GetHeight();
 	}
 
+	void GmWin::SetKeyReleasedCallBack(const std::function<void(const KeyReleased&)>& keyReleaseCallback)
+	{
+		mWindow->SetKeyReleasedCallBack(keyReleaseCallback);
+	}
+
+	void GmWin::SetKeyPressedCallBack(const std::function<void(const KeyPressed&)>& keyPressCallback)
+	{
+		mWindow->SetKeyPressedCallBack(keyPressCallback);
+	}
+
 	GmWin::GmWin()
 	{
 #ifdef YAM_WINDOWS
