@@ -46,3 +46,7 @@ include_directories(../glad/include)
 target_precompile_headers(Yam PRIVATE PrecompH.h)
 
 target_link_libraries(Yam glfw glad stbi)
+
+file(COPY Assets DESTINATION ${PROJECT_BINARY_DIR}/Yam)
+file(COPY Assets DESTINATION ${PROJECT_BINARY_DIR}/Debug)
+file(COPY Assets DESTINATION ${PROJECT_BINARY_DIR}/Release)

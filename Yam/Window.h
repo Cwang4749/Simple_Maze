@@ -14,5 +14,6 @@ namespace Yam
 		virtual int GetHeight() const = 0;
 		virtual void SetKeyPressedCallBack(std::function<void(const KeyPressed&)> keyPressCallback) = 0;
 		virtual void SetKeyReleasedCallBack(std::function<void(const KeyReleased&)> keyReleaseCallback) = 0;
+		virtual bool CloseWindow() = 0;
 	};
 }

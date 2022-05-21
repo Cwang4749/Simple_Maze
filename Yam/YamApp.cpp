@@ -9,44 +9,26 @@
 
 namespace Yam
 {
-	void YamApp::Run()
+	YamApp::YamApp()
 	{
 		YAM_LOG("Yam is running...");
 
 		Yam::GmWin::Init();
 
 		Yam::GmWin::GetWindow()->CreateWindow(800, 600, "Free Game");
-		
 
 		Renderer::Init();
-
-		Yam::Sprite bot("../Yam/Assets/Images/Bot.png");
-		Yam::Sprite BG("../Yam/Assets/Images/Background.png");
+	}
+	void YamApp::Run()
+	{
 
 		mNextFrameTime = std::chrono::steady_clock::now() + mFrameDuration;
 
-
-		int x{ 50 }, y{ 50 };
-		//auto keyCall = [](const KeyPressed& event) {YAM_LOG(event.GetKeyCode()); };
-		//auto keyRelease = [](const KeyReleased& event) {YAM_LOG(event.GetKeyCode()); };
-		auto keyCall = [&x, &y](const KeyPressed& event) {
-			if (event.GetKeyCode() == YAM_KEY_LEFT) x -= 5;
-			if (event.GetKeyCode() == YAM_KEY_RIGHT) x += 5;
-			if (event.GetKeyCode() == YAM_KEY_DOWN) y -= 5;
-			if (event.GetKeyCode() == YAM_KEY_UP) y += 5;
-		};
-		SetKeyPressedCallBack(keyCall);
-		//SetKeyReleasedCallBack(keyRelease);
-
-
-		while (true)
+		while (!GmWin::GetWindow()->CloseWindow())
 		{
-			OnUpdate();
-
 			Renderer::ClearScreen();
-			Renderer::Draw(BG, 0, 0, 0);
 
-			Renderer::Draw(bot, x, y, 1);
+			OnUpdate();
 
 			std::this_thread::sleep_until(mNextFrameTime);
 

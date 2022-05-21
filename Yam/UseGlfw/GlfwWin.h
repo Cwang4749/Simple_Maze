@@ -20,6 +20,8 @@ namespace Yam
 		virtual void SetKeyPressedCallBack(std::function<void(const KeyPressed&)> keyPressCallback) override;
 		virtual void SetKeyReleasedCallBack(std::function<void(const KeyReleased&)> keyReleaseCallback) override;
 
+		virtual bool CloseWindow() override;
+
 	private:
 		struct Callbacks
 		{

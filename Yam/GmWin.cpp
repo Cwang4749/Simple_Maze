@@ -46,6 +46,11 @@ namespace Yam
 		mWindow->SetKeyReleasedCallBack(keyReleaseCallback);
 	}
 
+	bool GmWin::CloseWindow()
+	{
+		return mWindow->CloseWindow();
+	}
+
 	void GmWin::SetKeyPressedCallBack(const std::function<void(const KeyPressed&)>& keyPressCallback)
 	{
 		mWindow->SetKeyPressedCallBack(keyPressCallback);

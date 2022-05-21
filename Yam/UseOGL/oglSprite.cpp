@@ -12,8 +12,10 @@ namespace Yam {
 		int numChannels;
 		unsigned char* data = stbi_load(file.c_str(), &mWidth, &mHeight, &numChannels, 0);
 
-		if (data == NULL)
-		YAM_LOG("ERROR: texture didn't load");
+		/*if (data == NULL)
+		{
+			YAM_LOG("ERROR: texture didn't load");
+		}*/
 
 		float vertices[] = {
 			0.0f, 0.0f, 0.0f, 0.0f,	//bottom left

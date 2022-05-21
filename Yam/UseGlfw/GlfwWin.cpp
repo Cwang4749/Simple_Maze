@@ -94,4 +94,8 @@ namespace Yam
 	{
 		mCallbacks.keyReleaseCallback = keyReleaseCallback;
 	}
+	bool GlfwWin::CloseWindow()
+	{
+		return glfwWindowShouldClose(mGlfwWindow);
+	}
 }

@@ -11,6 +11,7 @@ namespace Yam
 	class YAM_API YamApp
 	{
 	public:
+		YamApp();
 		void Run();
 		virtual void OnUpdate();
 		void SetKeyPressedCallBack(std::function<void(const KeyPressed &)> keyPressCallback);

@@ -1,3 +1,3 @@
-add_library(glad SHARED include/glad/glad.h src/glad.c)
+add_library(glad STATIC src/glad.c include/glad/glad.h)
 
 include_directories(include)

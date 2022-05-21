@@ -21,6 +21,8 @@ namespace Yam
 		void SetKeyPressedCallBack(const std::function<void(const KeyPressed&)>& keyPressCallback);
 		void SetKeyReleasedCallBack(const std::function<void(const KeyReleased&)>& keyReleaseCallback);
 
+		bool CloseWindow();
+
 	private:
 		inline static GmWin* mInst{nullptr};
 
