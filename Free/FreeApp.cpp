@@ -18,13 +18,16 @@ FreeApp::FreeApp()
 			mYSpeed = -3;
 			break;
 		case YAM_KEY_A:
-			mBotState = BotState::SideL;
+			if(BotStateChange(mBotState, BotState::SideL))
+				mBotState = BotState::SideL;
 			break;
 		case YAM_KEY_D:
-			mBotState = BotState::SideR;
+			if(BotStateChange(mBotState, BotState::SideR))
+				mBotState = BotState::SideR;
 			break;
 		case YAM_KEY_S:
-			mBotState = BotState::Standing;
+			if(BotStateChange(mBotState, BotState::Standing))
+				mBotState = BotState::Standing;
 			break;
 		}
 		});
@@ -40,9 +43,9 @@ FreeApp::FreeApp()
 void FreeApp::OnUpdate()
 {
 	// Draw Background
-	for(int i = 0; i < mStationary.size(); i++)
-		mStationary[i].Draw();
 	Sweep();
+	DrawMaze();
+	mGoal.Draw();
 
 	// Calculate new movement
 	mBot.SetX(mBot.GetX() + mXSpeed);
@@ -50,18 +53,7 @@ void FreeApp::OnUpdate()
 	CheckCollide();
 
 	// Switch to correct active image
-	switch (mBotState)
-	{
-	case BotState::Standing:
-		mBot.SetActiveImg(0);
-		break;
-	case BotState::SideL:
-		mBot.SetActiveImg(1);
-		break;
-	case BotState::SideR:
-		mBot.SetActiveImg(2);
-		break;
-	}
+	ChangeState();
 
 	Borders();
 
@@ -81,9 +73,15 @@ void FreeApp::InitializeCoords()
 
 	// Initialize sweeper coords
 	x = mStationary[12].GetWidth() + 30;
-	y = Yam::GmWin::GetWindow()->GetHeight() - mSweeper.GetHeight();
-	mSweeper.SetX(x);
-	mSweeper.SetY(y);
+	y = Yam::GmWin::GetWindow()->GetHeight() - mSweeperV.GetHeight();
+	mSweeperV.SetX(x);
+	mSweeperV.SetY(y);
+
+	// Initialize Goal coords
+	mGoal.SetActiveImg(0);
+	y = Yam::GmWin::GetWindow()->GetHeight() - mStationary[12].GetHeight() - mGoal.GetHeight();
+	mGoal.SetX(0);
+	mGoal.SetY(y);
 
 	// Rightmost Wall (i = 0)
 	x = Yam::GmWin::GetWindow()->GetWidth();
@@ -91,6 +89,10 @@ void FreeApp::InitializeCoords()
 	y = mBot.GetHeight() + 40 + mStationary[2].GetHeight();
 	mStationary[0].SetX(x);
 	mStationary[0].SetY(y);
+
+	// Leftmost Wall (i = 14, Stage 2)
+	mStationary[14].SetX(0);
+	mStationary[14].SetY(y);
 
 	//--------Base----------
 	// Left Wall of base (i = 1)
@@ -163,30 +165,120 @@ void FreeApp::InitializeCoords()
 	mStationary[13].SetY(y);
 }
 
+void FreeApp::StageTwo()
+{
+	// Buffer var
+	int x{ 0 }, y{ 0 };
+
+	// Reset Bot
+	x = Yam::GmWin::GetWindow()->GetWidth() - 20;
+	x -= mBot.GetWidth();
+	mBot.SetX(x);
+	mBot.SetY(20);
+
+	// Change Goal state and coords
+	mGoal.SetActiveImg(1);
+	x = Yam::GmWin::GetWindow()->GetWidth() / 2;
+	x -= (mGoal.GetWidth() / 2);
+	y = Yam::GmWin::GetWindow()->GetHeight() - mGoal.GetHeight();
+	mGoal.SetX(x);
+	mGoal.SetY(y);
+}
+
+void FreeApp::DrawMaze()
+{
+	switch (mStage)
+	{
+	case 1:
+		for (int i = 0; i < mStationary.size() - 1; i++)
+		{
+			mStationary[i].Draw();
+		}
+		break;
+	case 2:
+
+		for (int i = 0; i < 4; i++)
+		{
+			mStationary[i].Draw();
+		}
+		mStationary[14].Draw();
+		break;
+	}
+}
+
+void FreeApp::ChangeState()
+{
+	switch (mBotState)
+	{
+	case BotState::Standing:
+		mBot.SetActiveImg(0);
+		break;
+	case BotState::SideL:
+		mBot.SetActiveImg(1);
+		break;
+	case BotState::SideR:
+		mBot.SetActiveImg(2);
+		break;
+	}
+}
+
 void FreeApp::CheckCollide()
 {
+	if(Collide(mBot, mGoal))
+		StageClear();
+
 	// Collision with sweeper
-	if (Collide(mBot, mSweeper))
-	{
-		mBotState = BotState::Standing;
-		mBot.SetActiveImg(0);
-		int xBuffer{ 0 };
-		xBuffer = Yam::GmWin::GetWindow()->GetWidth() - 20;
-		xBuffer -= mBot.GetWidth();
-		mBot.SetX(xBuffer);
-		mBot.SetY(20);
-	}
+	if (Collide(mBot, mSweeperV) || ((mStage == 2) && Collide(mBot, mSweeperH)))
+		Reset();
 
 	// Collision with walls
-	for (int i = 0; i < mStationary.size(); i++)
+	for (int i = 0; i < mStationary.size() - 1; i++)
 	{
-		if (Collide(mBot, mStationary[i]))
+		if (mStage == 1 || i < 4)
+		{
+			if (Collide(mBot, mStationary[i]))
+			{
+				if (mXSpeed != 0)
+					mBot.SetX(mBot.GetX() - mXSpeed);
+				if (mYSpeed != 0)
+					mBot.SetY(mBot.GetY() - mYSpeed);
+			}
+		}
+	}
+	if (mStage == 2)
+	{
+		if (Collide(mBot, mStationary[14]))
 		{
 			if (mXSpeed != 0)
 				mBot.SetX(mBot.GetX() - mXSpeed);
 			if (mYSpeed != 0)
 				mBot.SetY(mBot.GetY() - mYSpeed);
 		}
+	}
+}
+
+void FreeApp::Reset()
+{
+	mBotState = BotState::Standing;
+	mBot.SetActiveImg(0);
+	int xBuffer{ 0 };
+	xBuffer = Yam::GmWin::GetWindow()->GetWidth() - 20;
+	xBuffer -= mBot.GetWidth();
+	mBot.SetX(xBuffer);
+	mBot.SetY(20);
+}
+
+void FreeApp::StageClear()
+{
+	switch (mStage)
+	{
+	case 1:
+		StageTwo();
+		mStage = 2;
+		break;
+	case 2:
+		exit(0);
+		break;
 	}
 }
 
@@ -235,12 +327,85 @@ void FreeApp::Borders()
 
 void FreeApp::Sweep()
 {
-	mSweeper.SetY(mSweeper.GetY() + mSweepSpeed);
-	if (mSweeper.GetY() + mSweeper.GetHeight() >= Yam::GmWin::GetWindow()->GetHeight() || mSweeper.GetY() <= 0) {
-		mSweeper.SetY(mSweeper.GetY() - mSweepSpeed);
-		mSweepSpeed = -mSweepSpeed;
+	// Buffer var
+	int buffer{ 0 };
+
+	switch (mStage)
+	{
+	case 1:
+		mSweeperV.SetY(mSweeperV.GetY() + mSweepSpeedV);
+		if (mSweeperV.GetY() + mSweeperV.GetHeight() >= Yam::GmWin::GetWindow()->GetHeight() || mSweeperV.GetY() <= 0) {
+			mSweeperV.SetY(mSweeperV.GetY() - mSweepSpeedV);
+			mSweepSpeedV = -mSweepSpeedV;
+		}
+		mSweeperV.Draw();
+		break;
+	case 2:
+		// Move Vertical Sweeper
+		mSweeperV.SetY(mSweeperV.GetY() + mSweepSpeedV);
+		if (mSweeperV.GetY() + mSweeperV.GetHeight() >= Yam::GmWin::GetWindow()->GetHeight() || mSweeperV.GetY() <= 0) {
+			mSweeperV.SetY(mSweeperV.GetY() - mSweepSpeedV);
+			mSweepSpeedV = -mSweepSpeedV;
+		}
+
+		// Clone Vertical Sweeper
+		for (int i = 1; i < 5; i++)
+		{
+			buffer = i * 160;
+			buffer -= 25;
+			mSweeperV.SetX(buffer);
+			mSweeperV.Draw();
+
+			// Collision with sweeper
+			if (Collide(mBot, mSweeperV))
+				Reset();
+		}
+
+		// Move Horizontal Sweeper
+		mSweeperH.SetX(mSweeperH.GetX() + mSweepSpeedH);
+		if (mSweeperH.GetX() + mSweeperH.GetWidth() >= Yam::GmWin::GetWindow()->GetWidth() || mSweeperH.GetX() <= 0) {
+			mSweeperH.SetX(mSweeperH.GetX() - mSweepSpeedH);
+			mSweepSpeedH = -mSweepSpeedH;
+		}
+
+		// Clone Horizontal Sweeper
+		for (int i = 0; i < 4; i++)
+		{
+			buffer = i * 150;
+			buffer = Yam::GmWin::GetWindow()->GetHeight() - buffer - 12;
+			mSweeperH.SetY(buffer);
+			mSweeperH.Draw();
+
+			// Collision with sweeper
+			if (Collide(mBot, mSweeperH))
+				Reset();
+		}
+		break;
 	}
-	mSweeper.Draw();
+}
+
+bool FreeApp::BotStateChange(BotState old_state, BotState new_state)
+{
+	mBotState = new_state;
+	ChangeState();
+
+	// Collision with walls
+	for (int i = 0; i < mStationary.size() - 1; i++)
+	{
+		if (Collide(mBot, mStationary[i]))
+		{
+			mBotState = old_state;
+			return false;
+		}
+	}
+
+	// Collision with sweeper
+	if (Collide(mBot, mSweeperV) || ((mStage == 2) && Collide(mBot, mSweeperH)))
+	{
+		Reset();
+		return false;
+	}
+	return true;
 }
 
 bool FreeApp::Collide(const Entity& one, const Entity& two)
