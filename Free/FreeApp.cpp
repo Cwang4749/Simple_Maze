@@ -29,6 +29,10 @@ FreeApp::FreeApp()
 			if(BotStateChange(mBotState, BotState::Standing))
 				mBotState = BotState::Standing;
 			break;
+		case YAM_KEY_SPACE:
+			if (mStage == 0)
+				mStage = 1;
+			break;
 		}
 		});
 
@@ -42,6 +46,18 @@ FreeApp::FreeApp()
 
 void FreeApp::OnUpdate()
 {
+	if (mStage == 0)
+	{
+		StartAnimation();
+		return;
+	}
+
+	if (mStage == 3)
+	{
+		EndAnimation();
+		return;
+	}
+
 	// Draw Background
 	Sweep();
 	DrawMaze();
@@ -64,6 +80,19 @@ void FreeApp::InitializeCoords()
 {
 	// Buffer var
 	int x{ 0 }, y{ 0 };
+
+	// Initialize Start
+	x = Yam::GmWin::GetWindow()->GetWidth() / 2;
+	y = Yam::GmWin::GetWindow()->GetHeight() / 2;
+	mStart.SetX(x - (mStart.GetWidth() / 2));
+	mStart.SetY(y - (mEC.GetHeight() / 2));
+
+	// Initialize End credits
+	mBG.SetX(0);
+	mBG.SetY(0);
+	x = Yam::GmWin::GetWindow()->GetWidth() / 2;
+	mEC.SetX(x - (mEC.GetWidth() / 2));
+	mEC.SetY(Yam::GmWin::GetWindow()->GetHeight());
 
 	// Initialize bot coords
 	x = Yam::GmWin::GetWindow()->GetWidth() - 20;
@@ -185,6 +214,52 @@ void FreeApp::StageTwo()
 	mGoal.SetY(y);
 }
 
+void FreeApp::StartAnimation()
+{
+	switch ((mTimer / 20) % 4)
+	{
+	case 0:
+		mStart.SetActiveImg(0);
+		break;
+	case 1:
+		mStart.SetActiveImg(1);
+		break;
+	case 2:
+		mStart.SetActiveImg(2);
+		break;
+	case 3:
+		mStart.SetActiveImg(3);
+		break;
+	}
+
+	mStart.Draw();
+	mTimer++;
+}
+
+void FreeApp::EndAnimation()
+{
+	if (mTimer / 2 < 30)
+	{
+		if (mTimer % 2 == 0)
+			mBG.SetActiveImg(mTimer / 2);
+	}
+
+	mBG.Draw();
+
+	if (mTimer / 2 > 50)
+	{
+		if (mTimer / 2 < 105)
+			mEC.SetY(mEC.GetY() - 3);
+
+		mEC.Draw();
+	}
+
+	if (mTimer / 2 == 140)
+		exit(0);
+
+	mTimer++;
+}
+
 void FreeApp::DrawMaze()
 {
 	switch (mStage)
@@ -277,7 +352,10 @@ void FreeApp::StageClear()
 		mStage = 2;
 		break;
 	case 2:
-		exit(0);
+		mTimer = 0;
+		mStage = 3;
+		break;
+	default:
 		break;
 	}
 }
@@ -392,18 +470,14 @@ bool FreeApp::BotStateChange(BotState old_state, BotState new_state)
 	// Collision with walls
 	for (int i = 0; i < mStationary.size() - 1; i++)
 	{
-		if (Collide(mBot, mStationary[i]))
+		if (mStage == 1 || i < 4)
 		{
-			mBotState = old_state;
-			return false;
+			if (Collide(mBot, mStationary[i]))
+			{
+				mBotState = old_state;
+				return false;
+			}
 		}
-	}
-
-	// Collision with sweeper
-	if (Collide(mBot, mSweeperV) || ((mStage == 2) && Collide(mBot, mSweeperH)))
-	{
-		Reset();
-		return false;
 	}
 	return true;
 }

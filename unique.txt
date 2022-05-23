@@ -1,0 +1,24 @@
+Calvin Wang Spring 2022
+Game: Free (Currently resizing is an issue, please keep at default: 800 x 600)
+Engine: Yam
+
+Bot:
+	- User manipulated Entity called "Bot"
+	- Bot moves with arrow keys
+	- Bot state changes with keys: A, S, or D
+	- Bot cannot move above the top of the game window
+	- Bot cannot move below the bottom of the game window
+	- Moving Bot past the left or right boundaries
+		of the game window will loop the bot to other side
+	- Bot cannot move past walls (stopped when collides)
+	- Bot cannot change state if it results in collision with walls
+Maze:
+	- Start screen with simple animation
+	- Press spacebar to start game
+	- Maze built with a vector of Entities
+	- Infinitely moving Entity called "Sweeper"
+	- Bot resets when it collides with the Sweeper
+	- Game progressed when goal (green line) is reached
+	- Stage 2 clones the Sweeper Entity
+	- After stage 2 is the end credits
+	- End credits: short animation before exit(0) is called
